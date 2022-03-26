@@ -1,0 +1,17 @@
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.exe
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.deps.json
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.runtimeconfig.json
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.runtimeconfig.dev.json
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.dll
+D:\studio project\TYP-2lab\TYP-2lab\bin\Debug\netcoreapp3.1\TYP-2lab.pdb
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.GeneratedMSBuildEditorConfig.editorconfig
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.AssemblyInfoInputs.cache
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.AssemblyInfo.cs
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.csproj.CoreCompileInputs.cache
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.dll
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.pdb
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.genruntimeconfig.cache
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP_2lab.Form1.resources
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.csproj.GenerateResource.cache
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP_2lab.Properties.Resources.resources
+D:\studio project\TYP-2lab\TYP-2lab\obj\Debug\netcoreapp3.1\TYP-2lab.csproj.AssemblyReference.cache
