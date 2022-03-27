@@ -18,10 +18,9 @@ namespace TYP_2lab
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            var table = new Table();
 
-            listBoxForServerWord.Items.AddRange(table.ItemValuesTableSeveredWord().ToArray());
-            listBoxRazdelitelei.Items.AddRange(table.ItemTableRazdeliteli().ToArray());
+            listBoxForServerWord.Items.AddRange(Tables.ItemValuesTableSeveredWord().ToArray());
+            listBoxRazdelitelei.Items.AddRange(Tables.ItemTableRazdeliteli().ToArray());
         }
 
         // Меню стрип - действия //
@@ -33,10 +32,10 @@ namespace TYP_2lab
         /// <param name="e"></param>
         private void PerformAnAnalysisToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Clear();
+
             var action = new Actions();
             var table = new Lexema(Tables);
-
-            Clear();
 
             action.Execute(textBoxCode.Text);
 
@@ -70,7 +69,7 @@ namespace TYP_2lab
         /// <param name="e"></param>
         private void SaveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Actions action = new Actions();
+            var action = new Actions();
             action.FileSave(textBoxCode.Text);
         }
 

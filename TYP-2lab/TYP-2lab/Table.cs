@@ -28,12 +28,12 @@ namespace TYP_2lab
             {"while"},
             {"write"},
             {"read"},
-            {"NE"},
-            {"EQ"},
-            {"LT"},
-            {"LE"},
-            {"GT"},
-            {"GE"},
+            {"ne"},
+            {"eq"},
+            {"lt"},
+            {"le"},
+            {"gt"},
+            {"ge"},
             {"or"},
             {"plus"},
             {"min"},
@@ -52,7 +52,9 @@ namespace TYP_2lab
             {":"},
             {";"},
             {","},
-            {"."}
+            {"."},
+            {"\r"},
+            {"\n"}
         };
         public List<string> TableDigit = new List<string>();
         public List<string> TableInfdificate = new List<string>();
@@ -74,11 +76,6 @@ namespace TYP_2lab
         public string[] ItemTableIndificate()
         {
             return TableInfdificate.ToArray();
-        }
-
-        public List<string> ItemTableLexemes()
-        {
-            return Lexemes;
         }
     }
 }
