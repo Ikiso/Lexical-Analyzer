@@ -238,6 +238,11 @@ namespace TYP_2lab
             return (current == 'B' || current == 'b');
         }
 
+        public static bool IsEndOfDigit()
+        {
+            return (BufferLexem.Contains(current) && isEnd());
+        }
+
         /// <summary>
         /// O or o?
         /// </summary>
@@ -489,6 +494,7 @@ namespace TYP_2lab
                         
                         add();
                         GC();
+
                         if(IsHexadecimalFigure())
                             State = States.N16;
                         else if (IsHexadecimal())

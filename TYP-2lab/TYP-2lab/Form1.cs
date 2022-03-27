@@ -81,9 +81,20 @@ namespace TYP_2lab
 
         public void Clear()
         {
-            Tables.Lexemes.Clear();
-            Tables.TableInfdificate.Clear();
-            Tables.TableDigit.Clear();
+            foreach (var x in Tables.Lexemes.ToArray())
+            {
+                Tables.Lexemes.Remove(x);
+            }
+
+            foreach (var x in Tables.TableDigit.ToArray())
+            {
+                Tables.TableDigit.Remove(x);
+            }
+
+            foreach (var x in Tables.TableInfdificate.ToArray())
+            {
+                Tables.TableInfdificate.Remove(x);
+            }
 
             listBoxDigit.Items.Clear();
             listBoxIndificate.Items.Clear();
