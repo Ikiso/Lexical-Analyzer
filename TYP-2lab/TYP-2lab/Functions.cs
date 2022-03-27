@@ -74,9 +74,14 @@ namespace TYP_2lab
         public static void GC()
         {
             if (!IsEndOfProgram())
+            {
                 current = TextQueue.Dequeue();
+            }
             else
+            {
+                i++;
                 current = '\0';
+            }
         }
         /// <summary>
         /// Поиск лексемы в таблице
@@ -265,7 +270,7 @@ namespace TYP_2lab
 
         public static bool isEnd()
         {
-            return (current != '\0' || current == ' ' || find() == -1);
+            return (current != '\0' || find() != -1);
         }
 
         /// <summary>
