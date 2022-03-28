@@ -664,7 +664,11 @@ namespace TYP_2lab
                         add();
                         GC();
 
-                        if (current == '+' || current == '-')
+                        if (IsHexadecimalFigure())
+                            State = States.N16;
+                        else if (IsHexadecimal())
+                            State = States.HX;
+                        else if (current == '+' || current == '-')
                         {
                             State = States.ZN;
                         }
