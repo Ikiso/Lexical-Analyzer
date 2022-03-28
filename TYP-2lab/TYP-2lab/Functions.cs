@@ -8,7 +8,7 @@ namespace TYP_2lab
         public static Queue<char> TextQueue = new Queue<char>();
         public static string BufferLexem = "";
         public static string ErroreCode = "";
-        public static char current = ' ';
+        public static char current = '\0';
         public static int Index = 0;
         public static int i = 0;
         public static Table Tables = new Table();
@@ -275,7 +275,7 @@ namespace TYP_2lab
 
         public static bool isEnd()
         {
-            return (current != '\0' || find() != -1);
+            return ((current != '\0' && find() != -1) || current == ' ');
         }
 
         /// <summary>
@@ -284,11 +284,14 @@ namespace TYP_2lab
         /// <param name="text"></param>
         public static void Scan(string text)
         {
+
+            TextQueue.Clear();
+
             InQueue(text);
             GC();
 
-            i = 0;
             State = States.H;
+            i = 0;
             ErroreCode = "";
 
             while (!IsEndOfProgram())
@@ -361,7 +364,7 @@ namespace TYP_2lab
                             else
                             {
                                 State = States.ER;
-                                ErroreCode = "#0004";
+                                ErroreCode = "#0004 Ошибка ну да ошибка, ну и что, зачем бухтеть то";
                             }
 
                             break;
@@ -495,11 +498,7 @@ namespace TYP_2lab
                         add();
                         GC();
 
-                        if(IsHexadecimalFigure())
-                            State = States.N16;
-                        else if (IsHexadecimal())
-                            State = States.HX;
-                        else if (isEnd())
+                        if (isEnd())
                         {
                             Index = look(Tables.TableDigit);
 
@@ -723,7 +722,7 @@ namespace TYP_2lab
 
                         Index = look(Tables.ItemTableRazdeliteli());
 
-                        if (Index != -1)
+                        if (Index != -1 && Index != 3)
                         {
                             Out();
                             State = States.H;
@@ -731,7 +730,7 @@ namespace TYP_2lab
                         else
                         {
                             State = States.ER;
-                            ErroreCode = @"E1OG - Ошибка индификатора.";
+                            ErroreCode = @"E1OG - Ошибка состояния limiter.";
                         }
 
                         break;
@@ -743,6 +742,7 @@ namespace TYP_2lab
                             {
                                 i++;
                             }
+
                             break;
                         } // Case Errore - ошибка
 
@@ -765,5 +765,4 @@ namespace TYP_2lab
             }
         }
     }
-
 }
