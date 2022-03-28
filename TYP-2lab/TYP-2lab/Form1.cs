@@ -40,7 +40,7 @@ namespace TYP_2lab
             action.Execute(textBoxCode.Text);
 
             textBoxReusltMessage.Text = action.Message();
-            textBoxCodeResult.Text = @" ";
+            textBoxCodeResult.Text = @"";
 
             foreach (var x in Tables.Lexemes)
             {

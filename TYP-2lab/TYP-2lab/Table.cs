@@ -56,9 +56,9 @@ namespace TYP_2lab
             {"\r"},
             {"\n"}
         };
+
         public List<string> TableDigit = new List<string>();
         public List<string> TableInfdificate = new List<string>();
-
         public List<string> Lexemes = new List<string>();
 
         public List<string> ItemValuesTableSeveredWord()
