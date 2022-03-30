@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace TYP_2lab
 {
@@ -9,9 +8,9 @@ namespace TYP_2lab
         public static string BufferLexem = "";
         public static string ErroreCode = "";
         public static char current = '\0';
-        public static int Index = 0;
+        public static int Index = 0; // z
         public static int i = 0;
-        public static Table Tables = new Table();
+        public static Table Tables = new Table(); // t
         public static States State = States.H;
 
         public Lexema(Table table)
@@ -88,7 +87,7 @@ namespace TYP_2lab
         /// </summary>
         public static int look(List<string> table)
         {
-            return table.IndexOf(BufferLexem.ToLower());
+            return table.IndexOf(BufferLexem);
         }
 
         public static int find()
@@ -286,7 +285,7 @@ namespace TYP_2lab
         {
 
             TextQueue.Clear();
-
+            text += ' ';
             InQueue(text);
             GC();
 
@@ -331,6 +330,7 @@ namespace TYP_2lab
                             {
                                 ++i;
                                 State = States.ER;
+                                ErroreCode = "Ошибка резкое завершенние программы";
                             }
                             else
                                 State = States.OG;
@@ -347,7 +347,20 @@ namespace TYP_2lab
                                 GC();
                             }
 
-                            if (isEnd())
+                            Index = look(Tables.ItemValuesTableSeveredWord());
+
+                            if (Index == 3)
+                            {
+                                if(find() == 9)
+                                    State = States.V;
+                                else
+                                {
+                                    ErroreCode = @"Ошибка конца программы";
+                                    State = States.ER;
+                                }
+                            }
+
+                            else if (isEnd())
                             {
                                 Index = look(Tables.ItemValuesTableSeveredWord());
 
@@ -364,7 +377,7 @@ namespace TYP_2lab
                             else
                             {
                                 State = States.ER;
-                                ErroreCode = "#0004 Ошибка ну да ошибка, ну и что, зачем бухтеть то";
+                                ErroreCode = "#0004 Ошибка Индификатора";
                             }
 
                             break;
@@ -375,7 +388,6 @@ namespace TYP_2lab
                         if(i > TextQueue.Count) break;
                         
                         add();
-                        Out();
 
                         while (current != '}')
                         {
@@ -387,7 +399,6 @@ namespace TYP_2lab
                         {
                             nill();
                             add();
-                            Out();
                             GC();
 
                             State = States.H;
@@ -583,6 +594,12 @@ namespace TYP_2lab
 
                     case States.N16:
 
+                        if (IsExponent())
+                        {
+                            State = States.E;
+                            break;
+                        }
+
                         while (IsHexadecimalFigure())
                         {
                             add();
@@ -640,9 +657,7 @@ namespace TYP_2lab
                             stat = true;
                         }
 
-                        if (BufferLexem == ".")
-                            State = States.V;
-                        else if (stat)
+                        if (stat)
                         {
                             if (IsExponent())
                                 State = States.E;
@@ -664,11 +679,8 @@ namespace TYP_2lab
                         add();
                         GC();
 
-                        if (IsHexadecimalFigure())
-                            State = States.N16;
-                        else if (IsHexadecimal())
-                            State = States.HX;
-                        else if (current == '+' || current == '-')
+
+                        if (current == '+' || current == '-' || IsDigit())
                         {
                             State = States.ZN;
                         }
@@ -685,7 +697,19 @@ namespace TYP_2lab
                         add();
                         GC();
 
-                        if (!IsDigit())
+                        if (IsHexadecimal())
+                        {
+                            State = States.HX;
+                            break;
+                        }
+
+                        else if (IsHexadecimalFigure())
+                        {
+                            State = States.N16;
+                            break;
+                        }
+
+                        else if (!IsDigit() && find() == -1)
                         {
                             ErroreCode = @"E0X11 - Ошибка знака порядка.";
                             State = States.ER;
@@ -726,10 +750,23 @@ namespace TYP_2lab
 
                         Index = look(Tables.ItemTableRazdeliteli());
 
-                        if (Index != -1 && Index != 3)
+                        if (Index != -1)
                         {
-                            Out();
-                            State = States.H;
+                            if (Index == 3)
+                            {
+                                State = States.ER;
+                                ErroreCode = @"E1OG - Ошибка соerereimighghter.";
+                            }
+                            else
+                            {
+                                if (Index != 10 && Index != 11)
+                                {
+                                    Out();
+                                    State = States.H;
+                                }
+                                else
+                                    State = States.H;
+                            }
                         }
                         else
                         {
@@ -752,10 +789,8 @@ namespace TYP_2lab
 
                     case States.V:
                         {
-                            Out();
                             GC();
-                            State = States.H;
-
+                            Out();
                             break;
                         } // Case Fin - окончание
 

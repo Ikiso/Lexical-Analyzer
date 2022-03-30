@@ -101,5 +101,10 @@ namespace TYP_2lab
             textBoxCodeResult.Clear();
             textBoxReusltMessage.Clear();
         }
+
+        private void textBoxCode_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
