@@ -108,54 +108,40 @@ namespace TYP_2lab
             BufferLexem = "";
         }
 
-        /// <summary>
-        /// Помещение лексемы в таблицу
-        /// </summary>
-        public static int put(ref List<string> table)
-        {
-            table.Add(BufferLexem.ToLower());
-            return look(table);
-        }
 
         /// <summary>
         ///  Заполнение итогового листа
         /// </summary>
-        public static void Out()
+        public static void Out(int number)
         {
-            var number = "";
+            var index = 0;
 
-            Index = look(Tables.ItemValuesTableSeveredWord());
+            switch (number)
+            {
+                case 1:
+                {
+                    index = look(Tables.ItemValuesTableSeveredWord());
+                    break;
+                }
+                case 2:
+                {
+                    index = look(Tables.ItemTableRazdeliteli());
+                    break;
+                }
+                case 3:
+                {
+                    index = look(Tables.TableDigit);
+                    break;
+                }
+                case 4:
+                {
+                    index = look(Tables.TableInfdificate);
+                    break;
+                }
 
-            if (Index == -1)
-            {
-                Index = look(Tables.TableInfdificate);
-                if (Index == -1)
-                {
-                    Index = look(Tables.TableDigit);
-                    if (Index == -1)
-                    {
-                        Index = look(Tables.ItemTableRazdeliteli());
-                        if (Index != -1)
-                        {
-                            number = "2";
-                        }
-                    }
-                    else
-                    {
-                        number = "3";
-                    }
-                }
-                else
-                {
-                    number = "4";
-                }
-            }
-            else
-            {
-                number = "1";
             }
 
-            var str = "(" + number + ", " + Index + ")";
+            var str = "(" + number + ", " + index + ")";
             Tables.Lexemes.Add(str);
         }
 
@@ -235,11 +221,6 @@ namespace TYP_2lab
         public static bool IsBinary()
         {
             return (current == 'B' || current == 'b');
-        }
-
-        public static bool IsEndOfDigit()
-        {
-            return (BufferLexem.Contains(current) && isEnd());
         }
 
         /// <summary>
@@ -351,12 +332,21 @@ namespace TYP_2lab
 
                             if (Index == 3)
                             {
-                                if(find() == 9)
+                                Out(1);
+
+                                if (find() == 9)
+                                {
+                                    nill();
+                                    add();
+                                    Out(2);
                                     State = States.V;
+                                    break;
+                                }
                                 else
                                 {
                                     ErroreCode = @"Ошибка конца программы";
                                     State = States.ER;
+                                    break;
                                 }
                             }
 
@@ -368,16 +358,23 @@ namespace TYP_2lab
                                 {
                                     Index = look(Tables.TableInfdificate);
                                     if (Index == -1)
+                                    {
                                         Tables.TableInfdificate.Add(BufferLexem);
+                                    }
+                                    Out(4);
                                 }
 
-                                Out();
+                                else
+                                {
+                                    Out(1);
+                                }
                                 State = States.H;
                             }
                             else
                             {
                                 State = States.ER;
                                 ErroreCode = "#0004 Ошибка Индификатора";
+                                break;
                             }
 
                             break;
@@ -462,7 +459,7 @@ namespace TYP_2lab
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
-                            Out();
+                            Out(3);
                             State = States.H;
                         }
                         else
@@ -518,7 +515,7 @@ namespace TYP_2lab
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
-                            Out();
+                            Out(3);
                             State = States.H;
                         }
                         else
@@ -581,7 +578,7 @@ namespace TYP_2lab
                                 Index = look(Tables.TableDigit);
                             }
 
-                            Out();
+                            Out(3);
                             State = States.H;
                         }
                         else
@@ -632,7 +629,7 @@ namespace TYP_2lab
                                 Index = look(Tables.TableDigit);
                             }
 
-                            Out();
+                            Out(3);
                             State = States.H;
                         }
                         else
@@ -732,7 +729,7 @@ namespace TYP_2lab
                                 Index = look(Tables.TableDigit);
                             }
 
-                            Out();
+                            Out(3);
                             State = States.H;
                         }
                         else
@@ -761,7 +758,7 @@ namespace TYP_2lab
                             {
                                 if (Index != 10 && Index != 11)
                                 {
-                                    Out();
+                                    Out(2);
                                     State = States.H;
                                 }
                                 else
@@ -790,7 +787,6 @@ namespace TYP_2lab
                     case States.V:
                         {
                             GC();
-                            Out();
                             break;
                         } // Case Fin - окончание
 

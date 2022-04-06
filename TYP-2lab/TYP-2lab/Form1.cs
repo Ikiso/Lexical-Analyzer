@@ -104,7 +104,23 @@ namespace TYP_2lab
 
         private void textBoxCode_TextChanged(object sender, EventArgs e)
         {
+            Clear();
 
+            var action = new Actions();
+            var table = new Lexema(Tables);
+
+            action.Execute(textBoxCode.Text);
+
+            textBoxReusltMessage.Text = action.Message();
+            textBoxCodeResult.Text = @"";
+
+            foreach (var x in Tables.Lexemes)
+            {
+                textBoxCodeResult.Text += x;
+            }
+
+            listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
+            listBoxDigit.Items.AddRange(Tables.ItemTableDigit());
         }
     }
 }
