@@ -108,15 +108,16 @@ namespace TYP_2lab
 
             var action = new Actions();
             var table = new Lexema(Tables);
+            var parser = new Parser(Tables);
 
             action.Execute(textBoxCode.Text);
 
-            textBoxReusltMessage.Text = action.Message();
+            textBoxReusltMessage.Text = action.Message() + " " + "\n";
             textBoxCodeResult.Text = @"";
 
-            foreach (var x in Tables.Lexemes)
+            foreach (var x in Tables.Lexemes.ToArray())
             {
-                textBoxCodeResult.Text += x;
+                textBoxCodeResult.Text += "(" + x.numTable + "," + x.numSymbol + ")";
             }
 
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());

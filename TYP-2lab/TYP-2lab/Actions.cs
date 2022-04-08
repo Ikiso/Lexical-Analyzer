@@ -38,11 +38,12 @@ namespace TYP_2lab
         public void Execute(string str)
         {
             Lexema.Scan(str);
+            Parser.Prog();
         }
 
         public string Message()
         {
-            return Lexema.Message(Lexema.State, Lexema.ErroreCode);
+            return Lexema.Message(Lexema.State, Lexema.ErroreCode) + " " +"\n" + Parser.Message(Parser.ErroreCode) + "\n";
         }
     }
 }
