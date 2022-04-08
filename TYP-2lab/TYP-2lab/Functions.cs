@@ -141,8 +141,8 @@ namespace TYP_2lab
 
             }
 
-            var str = "(" + number + ", " + index + ")";
-            Tables.Lexemes.Add(str);
+            var token = new Table.Token(number, index);
+            Tables.Lexemes.Add(token);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TYP_2lab
 {
@@ -6,6 +7,18 @@ namespace TYP_2lab
 
     public class Table
     {
+
+        public struct Token
+        {
+            public Token(int numTable, int numSymbol)
+            {
+                this.numTable = numTable;
+                this.numSymbol = numSymbol;
+            }
+
+            public int numTable;
+            public int numSymbol;
+        };
 
         private readonly List<string> TableSeveredWord = new List<string>()
         {
@@ -59,7 +72,7 @@ namespace TYP_2lab
 
         public List<string> TableDigit = new List<string>();
         public List<string> TableInfdificate = new List<string>();
-        public List<string> Lexemes = new List<string>();
+        public List<Token> Lexemes = new List<Token>();
 
         public List<string> ItemValuesTableSeveredWord()
         {
