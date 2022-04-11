@@ -340,23 +340,59 @@ namespace TYP_2lab
 
         public static bool Iden()
         {
-            // Lett | Iden Lett | Iden Fig
 
-            foreach (var s in Tables.TableInfdificate.ToArray())
+            if (Tables.TableInfdificate.Count != 0)
             {
-                if (_i < Tables.Lexemes.Count || Find(Tables.TableInfdificate, s) != -1)
+                if (_il.numTable != 4) return false;
+
+                var s = Tables.TableInfdificate.ToArray()[_il.numSymbol];
+
+                if (_i <= Tables.Lexemes.Count && Find(Tables.TableInfdificate, s) != -1)
                 {
                     return true;
                 }
                 else
                 {
-                    ErroreCode = @"Ошибка Iden()";
+                    ErroreCode = @"Ошибка отсутствует индификатор";
                     Message(ErroreCode);
                     return false;
                 }
-            }
 
-            return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool Num()
+        {
+
+            if (Tables.TableDigit.Count != 0)
+            {
+
+                if (_il.numTable != 3) return false;
+
+                var s = Tables.TableDigit.ToArray()[_il.numSymbol];
+
+                if (_i <= Tables.Lexemes.Count && Find(Tables.TableDigit, s) != -1)
+                {
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    ErroreCode = @"Ошибка Num()";
+                    Message(ErroreCode);
+                    return false;
+                }
+
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public static bool Type()
