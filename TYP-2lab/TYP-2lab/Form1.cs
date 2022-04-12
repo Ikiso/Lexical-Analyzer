@@ -36,15 +36,16 @@ namespace TYP_2lab
 
             var action = new Actions();
             var table = new Lexema(Tables);
+            var parser = new Parser(Tables);
 
             action.Execute(textBoxCode.Text);
 
-            textBoxReusltMessage.Text = action.Message();
+            textBoxReusltMessage.Text = action.Message() + " " + "\n";
             textBoxCodeResult.Text = @"";
 
-            foreach (var x in Tables.Lexemes)
+            foreach (var x in Tables.Lexemes.ToArray())
             {
-                textBoxCodeResult.Text += x;
+                textBoxCodeResult.Text += "(" + x.numTable + "," + x.numSymbol + ")";
             }
 
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
@@ -112,16 +113,23 @@ namespace TYP_2lab
 
             action.Execute(textBoxCode.Text);
 
-            textBoxReusltMessage.Text = action.Message() + " " + "\n";
+            textBoxReusltMessage.Text = action.Message() + Environment.NewLine;
             textBoxCodeResult.Text = @"";
 
             foreach (var x in Tables.Lexemes.ToArray())
             {
-                textBoxCodeResult.Text += "(" + x.numTable + "," + x.numSymbol + ")";
+                textBoxCodeResult.Text += @"(" + x.numTable + @"," + x.numSymbol + @")";
             }
 
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
             listBoxDigit.Items.AddRange(Tables.ItemTableDigit());
+
+        }
+
+        private void GoToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var action = new Actions();
+            action.FollowThisLink();
         }
     }
 }

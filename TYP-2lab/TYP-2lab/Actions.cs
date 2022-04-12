@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace TYP_2lab
@@ -35,15 +37,43 @@ namespace TYP_2lab
             MessageBox.Show(@"Файл сохранён");
         }
 
+        public void FollowThisLink()
+        {
+            var url = "https://coub.com/view/31h9qx";
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+        }
+
         public void Execute(string str)
         {
             Lexema.Scan(str);
             Parser.Prog();
         }
-
         public string Message()
         {
-            return Lexema.Message(Lexema.State, Lexema.ErroreCode) + " " +"\n" + Parser.Message(Parser.ErroreCode) + "\n";
+            return Lexema.Message(Lexema.State, Lexema.ErroreCode) + Environment.NewLine + Parser.Message(Parser.ErroreCode);
         }
     }
 }

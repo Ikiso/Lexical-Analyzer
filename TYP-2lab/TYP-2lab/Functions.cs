@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TYP_2lab
 {
@@ -264,6 +265,10 @@ namespace TYP_2lab
         /// <param name="text"></param>
         public static void Scan(string text)
         {
+            foreach (var x in text.Where(x => x == '\n' || x == '\r'))
+            {
+                text += ' ';
+            }
 
             TextQueue.Clear();
             text += ' ';
@@ -756,7 +761,7 @@ namespace TYP_2lab
                             }
                             else
                             {
-                                if (Index != 10 && Index != 11)
+                                if (Index != 10 && Index != 11) // Потом глянуть в чём трабл ) и потом переделать моменты
                                 {
                                     Out(2);
                                     State = States.H;

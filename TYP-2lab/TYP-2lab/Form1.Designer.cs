@@ -49,6 +49,7 @@ namespace TYP_2lab
             this.SaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PerformAnAnalysisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CleareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.GoToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textBoxCode = new System.Windows.Forms.TextBox();
             this.textBoxCodeResult = new System.Windows.Forms.TextBox();
             this.textBoxReusltMessage = new System.Windows.Forms.TextBox();
@@ -184,7 +185,8 @@ namespace TYP_2lab
             this.toolStripMenuItemVibor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileToolStripMenuItem,
             this.PerformAnAnalysisToolStripMenuItem,
-            this.CleareToolStripMenuItem});
+            this.CleareToolStripMenuItem,
+            this.GoToToolStripMenuItem});
             this.toolStripMenuItemVibor.Name = "toolStripMenuItemVibor";
             this.toolStripMenuItemVibor.Size = new System.Drawing.Size(70, 20);
             this.toolStripMenuItemVibor.Text = "Действие";
@@ -195,7 +197,7 @@ namespace TYP_2lab
             this.OpenToolStripMenuItem,
             this.SaveToolStripMenuItem});
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
-            this.FileToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.FileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.FileToolStripMenuItem.Text = "Файл";
             // 
             // OpenToolStripMenuItem
@@ -215,16 +217,23 @@ namespace TYP_2lab
             // PerformAnAnalysisToolStripMenuItem
             // 
             this.PerformAnAnalysisToolStripMenuItem.Name = "PerformAnAnalysisToolStripMenuItem";
-            this.PerformAnAnalysisToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.PerformAnAnalysisToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.PerformAnAnalysisToolStripMenuItem.Text = "Выполнить анализ";
             this.PerformAnAnalysisToolStripMenuItem.Click += new System.EventHandler(this.PerformAnAnalysisToolStripMenuItem_Click);
             // 
             // CleareToolStripMenuItem
             // 
             this.CleareToolStripMenuItem.Name = "CleareToolStripMenuItem";
-            this.CleareToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.CleareToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.CleareToolStripMenuItem.Text = "Очистить";
             this.CleareToolStripMenuItem.Click += new System.EventHandler(this.CleareToolStripMenuItem_Click);
+            // 
+            // GoToToolStripMenuItem
+            // 
+            this.GoToToolStripMenuItem.Name = "GoToToolStripMenuItem";
+            this.GoToToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.GoToToolStripMenuItem.Text = "Перейти";
+            this.GoToToolStripMenuItem.Click += new System.EventHandler(this.GoToToolStripMenuItem_Click);
             // 
             // textBoxCode
             // 
@@ -323,6 +332,7 @@ namespace TYP_2lab
         private ToolStripMenuItem SaveToolStripMenuItem;
         internal SaveFileDialog saveFileDialog1;
         private ToolStripMenuItem CleareToolStripMenuItem;
+        private ToolStripMenuItem GoToToolStripMenuItem;
     }
 }
 
