@@ -5,13 +5,13 @@ namespace TYP_2lab
 {
     internal class Lexema
     {
-        public static Queue<char> TextQueue = new Queue<char>();
+        public static Queue<char> TextQueue = new();
         public static string BufferLexem = "";
         public static string ErroreCode = "";
         public static char current = '\0';
         public static int Index = 0; // z
         public static int i = 0;
-        public static Table Tables = new Table(); // t
+        public static Table Tables = new(); // t
         public static States State = States.H;
 
         public Lexema(Table table)

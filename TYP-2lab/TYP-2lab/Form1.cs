@@ -45,7 +45,7 @@ namespace TYP_2lab
 
             foreach (var x in Tables.Lexemes.ToArray())
             {
-                textBoxCodeResult.Text += "(" + x.numTable + "," + x.numSymbol + ")";
+                textBoxCodeResult.Text += "(" + x.NumTable + "," + x.NumSymbol + ")";
             }
 
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
@@ -118,7 +118,7 @@ namespace TYP_2lab
 
             foreach (var x in Tables.Lexemes.ToArray())
             {
-                textBoxCodeResult.Text += @"(" + x.numTable + @"," + x.numSymbol + @")";
+                textBoxCodeResult.Text += @"(" + x.NumTable + @"," + x.NumSymbol + @")";
             }
 
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
