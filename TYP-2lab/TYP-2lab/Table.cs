@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TYP_2lab
 {
@@ -12,15 +11,15 @@ namespace TYP_2lab
         {
             public Token(int numTable, int numSymbol)
             {
-                this.numTable = numTable;
-                this.numSymbol = numSymbol;
+                this.NumTable = numTable;
+                this.NumSymbol = numSymbol;
             }
 
-            public int numTable;
-            public int numSymbol;
+            public int NumTable;
+            public int NumSymbol;
         };
 
-        private readonly List<string> TableSeveredWord = new List<string>()
+        private readonly List<string> _tableSeveredWord = new()
         {
             {"program"},
             {"var"},
@@ -54,7 +53,7 @@ namespace TYP_2lab
             {"mult"},
             {"div"}
         };
-        private readonly List<string> TableRazdeliteli = new List<string>()
+        private readonly List<string> _tableRazdeliteli = new()
         {
             {"("},
             {")"},
@@ -70,17 +69,17 @@ namespace TYP_2lab
             {"\n"}
         };
 
-        public List<string> TableDigit = new List<string>();
-        public List<string> TableInfdificate = new List<string>();
-        public List<Token> Lexemes = new List<Token>();
+        public List<string> TableDigit = new();
+        public List<string> TableInfdificate = new();
+        public List<Token> Lexemes = new();
 
         public List<string> ItemValuesTableSeveredWord()
         {
-            return TableSeveredWord;
+            return _tableSeveredWord;
         }
         public List<string> ItemTableRazdeliteli()
         {
-            return TableRazdeliteli;
+            return _tableRazdeliteli;
         }
         public string[] ItemTableDigit()
         {

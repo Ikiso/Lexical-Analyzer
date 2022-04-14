@@ -5,10 +5,10 @@ namespace TYP_2lab
     internal class Parser
     {
 
-        public static Table Tables = new Table();
+        public static Table Tables = new();
+        public static string ErroreCode = "";
         private static Table.Token _il;
         private static int _i;
-        public static string ErroreCode = "";
 
 
         public Parser(Table tables)
@@ -43,12 +43,12 @@ namespace TYP_2lab
         {
             var numLexem = tables.FindIndex(x => x == word);
 
-            return _il.numSymbol == numLexem ? _il.numSymbol : -1;
+            return _il.NumSymbol == numLexem ? _il.NumSymbol : -1;
         }
 
         public static bool Compare(int number, string word)
         {
-            return _il.numSymbol == Look(number, word);
+            return _il.NumSymbol == Look(number, word);
         }
 
         public static string Message(string erroreCode)
@@ -63,23 +63,23 @@ namespace TYP_2lab
             // Prog -> program var Desc begin SOper end.
 
             _i = 0;
-            _il.numSymbol = 0;
-            _il.numTable = 0;
+            _il.NumSymbol = 0;
+            _il.NumTable = 0;
 
             ReadNextElement();
 
 
-            if (Compare(_il.numTable, "program"))
+            if (Compare(_il.NumTable, "program"))
             {
                 ReadNextElement();
 
-                if (Compare(_il.numTable, "var"))
+                if (Compare(_il.NumTable, "var"))
                 {
                     ReadNextElement();
 
                     if(Desc())
                     {
-                        if (Compare(_il.numTable, "begin"))
+                        if (Compare(_il.NumTable, "begin"))
                         {
 
                             ErroreCode = @"E003 - Отсутсвтует ключевое слово end";
@@ -89,51 +89,13 @@ namespace TYP_2lab
 
                             if (SOper())
                             {
-
-                                if (Compare(_il.numTable, "end"))
-                                {
-                                    ReadNextElement();
-
-                                    if (Compare(_il.numTable, "."))
-                                    {
-                                        ErroreCode = "";
-                                        Message(ErroreCode);
-                                    }
-                                    else
-                                    {
-                                        ErroreCode = @"E004 - Ошибка отсутствует .";
-                                        Message(ErroreCode);
-                                        return false;
-                                    }
-                                }
-                                else
-                                {
-                                    ErroreCode = @"E003 - Отсутсвтует ключевое слово end";
-                                    Message(ErroreCode);
-                                }
+                                if (!ProgEnd())
+                                    return false;
                             }
                             else
                             {
-                                if (Compare(_il.numTable, "end"))
-                                {
-                                    ReadNextElement();
-
-                                    if (Compare(_il.numTable, "."))
-                                    {
-                                        ErroreCode = "";
-                                        Message(ErroreCode);
-                                    }
-                                    else
-                                    {
-                                        ErroreCode = @"E004 - Ошибка отсутствует .";
-                                        Message(ErroreCode);
-                                        return false;
-                                    }
-                                }
-                                else
-                                {
+                                if (!ProgEnd())
                                     return false;
-                                }
                             }
                         }
                         else
@@ -166,9 +128,34 @@ namespace TYP_2lab
             return true;
         }
 
+        public static bool ProgEnd()
+        {
+            if (Compare(_il.NumTable, "end"))
+            {
+                ReadNextElement();
+
+                if (Compare(_il.NumTable, "."))
+                {
+                    ErroreCode = "";
+                    Message(ErroreCode);
+                    return true;
+                }
+                else
+                {
+                    ErroreCode = @"E004 - Ошибка отсутствует .";
+                    Message(ErroreCode);
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static bool IsLineEnd()
         {
-            return Compare(_il.numTable, ";");
+            return Compare(_il.NumTable, ";");
         }
 
         /// <summary> Desc - check? </summary>
@@ -177,7 +164,7 @@ namespace TYP_2lab
             Desc:
             if (SIden())
             {
-                if (Compare(_il.numTable, ":"))
+                if (Compare(_il.NumTable, ":"))
                 {
                     ReadNextElement();
                     if (Type())
@@ -207,7 +194,7 @@ namespace TYP_2lab
                     return false;
                 }
             }
-            else if (Compare(_il.numTable, ","))
+            else if (Compare(_il.NumTable, ","))
             {
                 ErroreCode = @"E002 - Отсутсвует индификатор после ,";
                 Message(ErroreCode);
@@ -223,34 +210,25 @@ namespace TYP_2lab
         public static bool SOper()
         {
             // Oper | SOper ; Oper
-            SOper:
             if (Oper())
             {
                 if (IsLineEnd())
                 {
                     ReadNextElement();
-                    goto SOper;
+                    if (!SOper())
+                        return false;
+                }
+                else if (Compare(_il.NumTable, "]"))
+                {
+                    ReadNextElement();
+                    if (!SOper())
+                        return false;
                 }
                 else
                 {
-                    ErroreCode = @"Отсутствует ; - SOper()";
+                    ErroreCode = @"Отсутствует ; - для обычного оператор/отсутствует знак перехода для составного";
                     return false;
                 }
-            }
-            else
-            {
-                return false;
-            }
-
-        }
-
-        public static bool Operand()
-        {
-            // Sum | Operand OperGrAdd Sum
-
-            if (Num() || Iden())
-            {
-                ReadNextElement();
             }
             else
             {
@@ -260,28 +238,139 @@ namespace TYP_2lab
             return true;
         }
 
+        public static bool Operand()
+        {
+        // Sum | Operand OperGrAdd Sum
+            if (Summation())
+            {
+
+                if (OperGrAdd())
+                {
+                    ReadNextElement();
+                    if (!Operand())
+                        return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Summation(слагаемое)</summary>
+        public static bool Summation()
+        {
+
+            if (Multiplier())
+            {
+                if (OperGrMult())
+                {
+                    ReadNextElement();
+                    if (!Summation())
+                        return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>Multiplier(множитель)</summary>
+        public static bool Multiplier()
+        {
+            if (Iden())
+            {
+                ReadNextElement();
+                return true;
+            }
+            else if (Num())
+            {
+                ReadNextElement();
+                return true;
+            }
+            else if (LogCon())
+            {
+                ReadNextElement();
+                return true;
+            }
+            else if (UnaryOperation())
+            {
+                ReadNextElement();
+                if (!Multiplier())
+                    return false;
+                return true;
+            }
+            else  if (Compare(_il.NumTable, "("))
+            {
+                ReadNextElement();
+                if (!Compare(_il.NumTable, "(") && Exp())
+                {
+                    if (Compare(_il.NumTable, ")"))
+                    {
+                        ReadNextElement();
+                        return true;
+                    }
+                    else
+                    {
+                        ErroreCode = @"Отсутствует )";
+                        Message(ErroreCode);
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static bool Oper()
         {
-            // [Comp] | Assig | Cond | FixLoop | CondLoop | In | Out 
+            // [Compound] | Assig | Cond | FixLoop | CondLoop | In | Out 
 
-
-            if (Compare(_il.numTable, "if"))
+            if (Compare(_il.NumTable, "[")) // бесконечный цикл - исправить
+            {
+                ReadNextElement();
+                if (!Compound())
+                    return false;
+                else if (Compare(_il.NumTable, "]"))
+                {
+                    ReadNextElement();
+                    return true;
+                }
+                else
+                {
+                    ErroreCode = @"Ошибка отсутствует завершение Составного оператора";
+                    Message(ErroreCode);
+                    return false;
+                }
+            }
+            else if (Compare(_il.NumTable, "if"))
             {
                 return Cond();
             }
-            else if (Compare(_il.numTable, "for"))
+            else if (Compare(_il.NumTable, "for"))
             {
                 return FixLoop();
             }
-            else if (Compare(_il.numTable, "while"))
+            else if (Compare(_il.NumTable, "while"))
             {
                 return CondLoop();
             }
-            else if (Compare(_il.numTable, "read"))
+            else if (Compare(_il.NumTable, "read"))
             {
                 return In();
             }
-            else if (Compare(_il.numTable, "write"))
+            else if (Compare(_il.NumTable, "write"))
             {
                 return Out();
             }
@@ -298,27 +387,48 @@ namespace TYP_2lab
 
         }
 
+        /// <summary> Comp  - доделать </summary>
+        public static bool Compound()
+        {
+            // Compound -> Operator | Compound Symbol Operator
+            if (!Compare(_il.NumTable, "[") && Oper())
+            {
+                if (Symbol())
+                {
+                    ReadNextElement();
+                    if (!Symbol() && !Compound() && !Compare(_il.NumTable, "]"))
+                        return false;
+                }
+                else
+                {
+                    ErroreCode = @"отсутствует символ перехода";
+                    Message(ErroreCode);
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+            return true;
+        }
+
+        public static bool Symbol()
+        {
+            return Compare(_il.NumTable, "\n") || Compare(_il.NumTable, ":");
+        }
+
         /// <summary> Assig - доделать момент с несколькими выражениями и корректный вывод ошибок </summary>
         public static bool Assig()
 
         {
             // Assig -> Iden as Exp
-
-
-            if (Compare(_il.numTable, "as"))
+            if (Compare(_il.NumTable, "as"))
             {
                 ReadNextElement();
-
-                if (Exp())
-                {
-
-                }
-                else
-                {
-                    ErroreCode = @"E312 - Ошибка отсутствует вырожение";
-                    Message(ErroreCode);
+                if (!Exp())
                     return false;
-                }
             }
             else
             {
@@ -326,6 +436,7 @@ namespace TYP_2lab
                 Message(ErroreCode);
                 return false;
             }
+
 
             return true;
         }
@@ -336,6 +447,45 @@ namespace TYP_2lab
             // if Exp then Oper | if Exp then Oper else Oper
 
             ReadNextElement();
+            if (Exp())
+            {
+                if (Compare(_il.NumTable, "then"))
+                {
+                    ReadNextElement();
+                    if (Oper())
+                    {
+                        if (Compare(_il.NumTable, "else"))
+                        {
+                            ReadNextElement();
+                            if (!Oper())
+                                return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                    else if(Compare(_il.NumTable ,"and") || Compare(_il.NumTable, "or"))
+                    {
+                        if (!Oper())
+                            return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    ErroreCode = @"Отсутствует ключевое слово then";
+                    Message(ErroreCode);
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
 
 
             return true;
@@ -345,16 +495,82 @@ namespace TYP_2lab
         {
             // FixLoop ->  for Assig to Exp do Oper 
             ReadNextElement();
+            if (Iden())
+            {
+                ReadNextElement();
+                if (Assig())
+                {
+                    if (Compare(_il.NumTable, "to"))
+                    {
+                        ReadNextElement();
+                        if (Exp())
+                        {
+                            if (Compare(_il.NumTable, "do"))
+                            {
+                                ReadNextElement();
+                                if (!Oper())
+                                    return false;
+                            }
+                            else
+                            {
+                                ErroreCode = @"Отсутствует ключевое слово do";
+                                Message(ErroreCode);
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        ErroreCode = @"Отсутствует ключевое слово to";
+                        Message(ErroreCode);
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                ErroreCode = @"Отсутствует индификатор";
+                Message(ErroreCode);
+                return false;
+            }
 
-            return false;
+            return true;
         }
 
         public static bool CondLoop()
         {
             // CondLoop ->  while Exp do Oper
             ReadNextElement();
+            if (Exp())
+            {
+                if (Compare(_il.NumTable, "do"))
+                {
+                    ReadNextElement();
+                    if (!Oper())
+                        return false;
+                }
+                else
+                {
+                    ErroreCode = @"Отсутствует ключевое слово do";
+                    Message(ErroreCode);
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
 
-            return false;
+
+            return true;
         }
 
         public static bool In()
@@ -363,13 +579,13 @@ namespace TYP_2lab
 
             ReadNextElement();
 
-            if (Compare(_il.numTable, "("))
+            if (Compare(_il.NumTable, "("))
             {
                 ReadNextElement();
                 if (Iden())
                 {
                     ReadNextElement();
-                    if (Compare(_il.numTable, ")"))
+                    if (Compare(_il.NumTable, ")"))
                     {
                         ReadNextElement();
                     }
@@ -402,13 +618,12 @@ namespace TYP_2lab
 
             ReadNextElement();
 
-            if (Compare(_il.numTable, "("))
+            if (Compare(_il.NumTable, "("))
             {
                 ReadNextElement();
-                if (Iden())
+                if (SExp())
                 {
-                    ReadNextElement();
-                    if (Compare(_il.numTable, ")"))
+                    if (Compare(_il.NumTable, ")"))
                     {
                         ReadNextElement();
                     }
@@ -439,15 +654,13 @@ namespace TYP_2lab
         public static bool SExp()
         {
             // SExp -> Exp | SExp, Exp
-            SExp:
             if (Exp())
             {
-                ReadNextElement();
-
-                if (Compare(_il.numTable, ","))
+                if (Compare(_il.NumTable, ","))
                 {
                     ReadNextElement();
-                    goto SExp;
+                    if (!SExp())
+                        return false;
                 }
             }
             else
@@ -461,54 +674,16 @@ namespace TYP_2lab
 
         public static bool Exp()
         {
-            // Exp -> Oper | Exp OperaGrRelat Oper
-            Operands:
+            // Exp -> Operand | Exp OperaGrRelat Operand
             if (Operand())
             {
-
-                if (OperGrAdd())
+                if (OperaGrRelat())
                 {
                     ReadNextElement();
 
-                    if (Iden() || Num())
-                    {
-                        ReadNextElement();
-                        goto Operands;
-                    }
-                    else
+                    if (!Exp())
                         return false;
-                }
-                else if (OperaGrRelat())
-                {
-                    ReadNextElement();
-
-                    if (Num() || Iden())
-                    {
-                        ReadNextElement();
-                        goto Operands;
-                    }
-                    else
-                        return false;
-                }
-                else if (OperGrMult())
-                {
-                    ReadNextElement();
-
-                    if (Iden() || Num())
-                    {
-                        ReadNextElement();
-                        goto Operands;
-                    }
-                    else
-                        return false;
-                }
-                else if (Compare(_il.numTable, ";"))
-                {
                     return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
             else
@@ -518,6 +693,7 @@ namespace TYP_2lab
                 return false;
             }
 
+            return true;
         }
 
         /// <summary> SIden - check ? </summary>
@@ -529,7 +705,7 @@ namespace TYP_2lab
             {
                 ReadNextElement();
 
-                if (Compare(_il.numTable, ","))
+                if (Compare(_il.NumTable, ","))
                 {
                     ReadNextElement();
                     goto SIden;
@@ -554,9 +730,9 @@ namespace TYP_2lab
 
             if (Tables.TableInfdificate.Count != 0)
             {
-                if (_il.numTable != 4) return false;
+                if (_il.NumTable != 4) return false;
 
-                var s = Tables.TableInfdificate.ToArray()[_il.numSymbol];
+                var s = Tables.TableInfdificate.ToArray()[_il.NumSymbol];
 
                 if (_i <= Tables.Lexemes.Count && Find(Tables.TableInfdificate, s) != -1)
                 {
@@ -583,9 +759,9 @@ namespace TYP_2lab
             if (Tables.TableDigit.Count != 0)
             {
 
-                if (_il.numTable != 3) return false;
+                if (_il.NumTable != 3) return false;
 
-                var s = Tables.TableDigit.ToArray()[_il.numSymbol];
+                var s = Tables.TableDigit.ToArray()[_il.NumSymbol];
 
                 if (_i <= Tables.Lexemes.Count && Find(Tables.TableDigit, s) != -1)
                 {
@@ -610,14 +786,14 @@ namespace TYP_2lab
         /// <summary> LogCon - check </summary>
         public static bool LogCon()
         {
-            return Compare(_il.numTable, "true") || Compare(_il.numTable, "false");
+            return Compare(_il.NumTable, "true") || Compare(_il.NumTable, "false");
         }
 
         /// <summary> Type - check </summary>
         public static bool Type()
         {
             // int | float | bool
-            var isType = Compare(_il.numTable, "int") || Compare(_il.numTable, "float") || Compare(_il.numTable, "bool");
+            var isType = Compare(_il.NumTable, "int") || Compare(_il.NumTable, "float") || Compare(_il.NumTable, "bool");
 
             if (isType)
             {
@@ -637,18 +813,23 @@ namespace TYP_2lab
         {
             // OperGrRelat -> NE | EQ | LT | LE | GT | GE
 
-            return Compare(_il.numTable, "NE") || Compare(_il.numTable, "EQ") || Compare(_il.numTable, "LT") ||
-                   Compare(_il.numTable, "LE") || Compare(_il.numTable, "GT") || Compare(_il.numTable, "GE");
+            return Compare(_il.NumTable, "NE") || Compare(_il.NumTable, "EQ") || Compare(_il.NumTable, "LT") ||
+                   Compare(_il.NumTable, "LE") || Compare(_il.NumTable, "GT") || Compare(_il.NumTable, "GE");
         }
 
         public static bool OperGrMult()
         {
-            return Compare(_il.numTable, "div") || Compare(_il.numTable, "mult") || Compare(_il.numTable, "and");
+            return Compare(_il.NumTable, "div") || Compare(_il.NumTable, "mult") || Compare(_il.NumTable, "and");
         }
 
         public static bool OperGrAdd()
         {
-            return Compare(_il.numTable, "plus") || Compare(_il.numTable, "min") || Compare(_il.numTable, "or");
+            return Compare(_il.NumTable, "plus") || Compare(_il.NumTable, "min") || Compare(_il.NumTable, "or");
+        }
+
+        public static bool UnaryOperation()
+        {
+            return Compare(_il.NumTable, "~");
         }
     }
 }
