@@ -25,6 +25,33 @@ namespace TYP_2lab
             }
         }
 
+        public static void RTheElementTransition()
+        {
+            if (Compare(_il.NumTable, "\n"))
+            {
+                while (Compare(_il.NumTable, "\n"))
+                {
+                    ReadNextElement();
+                    if (_i == Tables.Lexemes.Count)
+                    {
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                ReadNextElement();
+                if (!Compare(_il.NumTable, "\n"))
+                {
+                    return;
+                }
+                else
+                {
+                    RTheElementTransition();
+                }
+            }
+        }
+
         public static int Look(int number, string word)
         {
             var index = number switch
@@ -66,37 +93,37 @@ namespace TYP_2lab
             _il.NumSymbol = 0;
             _il.NumTable = 0;
 
-            ReadNextElement();
+            RTheElementTransition();
 
 
             if (Compare(_il.NumTable, "program"))
             {
-                ReadNextElement();
+                RTheElementTransition();
 
                 if (Compare(_il.NumTable, "var"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
 
                     if(Desc())
                     {
                         if (Compare(_il.NumTable, "begin"))
                         {
 
-                            ErroreCode = @"E003 - Отсутсвтует ключевое слово end";
+                            ErroreCode = @"E003 - Отсутсвтует оператор";
                             Message(ErroreCode);
 
-                            ReadNextElement();
+                            RTheElementTransition();
 
                             if (SOper())
                             {
                                 if (!ProgEnd())
                                     return false;
                             }
-                            else
-                            {
-                                if (!ProgEnd())
-                                    return false;
-                            }
+                            //else
+                            //{
+                            //    if (!ProgEnd())
+                            //        return false;
+                            //}
                         }
                         else
                         {
@@ -130,9 +157,11 @@ namespace TYP_2lab
 
         public static bool ProgEnd()
         {
+            if(!Compare(_il.NumTable, "end")) RTheElementTransition();
+
             if (Compare(_il.NumTable, "end"))
             {
-                ReadNextElement();
+                RTheElementTransition();
 
                 if (Compare(_il.NumTable, "."))
                 {
@@ -149,6 +178,8 @@ namespace TYP_2lab
             }
             else
             {
+                ErroreCode = @"E003 - Отсутсвтует ключевое слово end";
+                Message(ErroreCode);
                 return false;
             }
         }
@@ -166,12 +197,12 @@ namespace TYP_2lab
             {
                 if (Compare(_il.NumTable, ":"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (Type())
                     {
                         if (IsLineEnd())
                         {
-                            ReadNextElement();
+                            RTheElementTransition();
                             goto Desc;
                         }
                         else
@@ -214,13 +245,30 @@ namespace TYP_2lab
             {
                 if (IsLineEnd())
                 {
-                    ReadNextElement();
-                    if (!SOper())
+                    RTheElementTransition();
+                    if (Compare(_il.NumTable, "end"))
+                    {
+                        ErroreCode = @"После оператором должна отсутствовать ;";
+                        Message(ErroreCode);
                         return false;
+                    }
+                    else if (!SOper())
+                    {
+                        return false;
+                    }
+                }
+                else if (!IsLineEnd())
+                {
+                    if (SOper())
+                    {
+                        ErroreCode = @"Перед оператором отсутствует ;";
+                        Message(ErroreCode);
+                        return false;
+                    }
                 }
                 else if (Compare(_il.NumTable, "]"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (!SOper())
                         return false;
                 }
@@ -246,7 +294,7 @@ namespace TYP_2lab
 
                 if (OperGrAdd())
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (!Operand())
                         return false;
                 }
@@ -267,7 +315,7 @@ namespace TYP_2lab
             {
                 if (OperGrMult())
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (!Summation())
                         return false;
                 }
@@ -337,19 +385,19 @@ namespace TYP_2lab
         {
             // [Compound] | Assig | Cond | FixLoop | CondLoop | In | Out 
 
-            if (Compare(_il.NumTable, "[")) // бесконечный цикл - исправить
+            if (Compare(_il.NumTable, "["))
             {
-                ReadNextElement();
+                RTheElementTransition();
                 if (!Compound())
                     return false;
                 else if (Compare(_il.NumTable, "]"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     return true;
                 }
                 else
                 {
-                    ErroreCode = @"Ошибка отсутствует завершение Составного оператора";
+                    ErroreCode = @"Ошибка ошибка составного оператора";
                     Message(ErroreCode);
                     return false;
                 }
@@ -376,7 +424,7 @@ namespace TYP_2lab
             }
             else if (Iden())
             {
-                ReadNextElement();
+                RTheElementTransition();
                 return Assig();
             }
 
@@ -396,19 +444,38 @@ namespace TYP_2lab
                 if (Symbol())
                 {
                     ReadNextElement();
-                    if (!Symbol() && !Compound() && !Compare(_il.NumTable, "]"))
+                    if (Compare(_il.NumTable, ":"))
+                    {
+                        ReadNextElement();
+                        if (!Compound())
+                        {
+                            ErroreCode = @"После : отсутствует оператор";
+                            Message(ErroreCode);
+                            return false;
+                        }
+                    }
+                    else if (Compare(_il.NumTable, "\n"))
+                    {
+                        ReadNextElement();
+                        if (!Compound())
+                            return false;
+                        //if (Compare(_il.NumTable, "\n"))
+                        //{
+                        //   ReadNextElement();
+                        //}
+                        //else
+                        //{
+                        //    if (!Compound())
+                        //        return false;
+                        //}
+                    }
+                    else if (!Symbol() && !Compound() && !Compare(_il.NumTable, "]"))
                         return false;
-                }
-                else
-                {
-                    ErroreCode = @"отсутствует символ перехода";
-                    Message(ErroreCode);
-                    return false;
                 }
             }
             else
             {
-                return true;
+                return false;
             }
 
             return true;
@@ -426,7 +493,7 @@ namespace TYP_2lab
             // Assig -> Iden as Exp
             if (Compare(_il.NumTable, "as"))
             {
-                ReadNextElement();
+                RTheElementTransition();
                 if (!Exp())
                     return false;
             }
@@ -451,12 +518,14 @@ namespace TYP_2lab
             {
                 if (Compare(_il.NumTable, "then"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (Oper())
                     {
-                        if (Compare(_il.NumTable, "else"))
+                        if(Compare(_il.NumTable, ";"))
+                        { }
+                        else if (Compare(_il.NumTable, "else"))
                         {
-                            ReadNextElement();
+                            RTheElementTransition();
                             if (!Oper())
                                 return false;
                         }
@@ -507,7 +576,7 @@ namespace TYP_2lab
                         {
                             if (Compare(_il.NumTable, "do"))
                             {
-                                ReadNextElement();
+                                RTheElementTransition();
                                 if (!Oper())
                                     return false;
                             }
@@ -553,7 +622,7 @@ namespace TYP_2lab
             {
                 if (Compare(_il.NumTable, "do"))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (!Oper())
                         return false;
                 }
@@ -584,7 +653,7 @@ namespace TYP_2lab
                 ReadNextElement();
                 if (Iden())
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (Compare(_il.NumTable, ")"))
                     {
                         ReadNextElement();
@@ -658,7 +727,7 @@ namespace TYP_2lab
             {
                 if (Compare(_il.NumTable, ","))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     if (!SExp())
                         return false;
                 }
@@ -679,7 +748,7 @@ namespace TYP_2lab
             {
                 if (OperaGrRelat())
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
 
                     if (!Exp())
                         return false;
@@ -703,11 +772,11 @@ namespace TYP_2lab
             SIden:
             if (Iden())
             {
-                ReadNextElement();
+                RTheElementTransition();
 
                 if (Compare(_il.NumTable, ","))
                 {
-                    ReadNextElement();
+                    RTheElementTransition();
                     goto SIden;
                 }
                 else
