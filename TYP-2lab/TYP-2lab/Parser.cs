@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace TYP_2lab
 {
@@ -109,7 +109,7 @@ namespace TYP_2lab
                         if (Compare(_il.NumTable, "begin"))
                         {
 
-                            ErroreCode = @"E003 - Отсутсвтует оператор";
+                            ErroreCode = @"E003 - Ошибка оператор";
                             Message(ErroreCode);
 
                             RTheElementTransition();
@@ -127,7 +127,7 @@ namespace TYP_2lab
                         }
                         else
                         {
-                            ErroreCode = @"E002 - Отсутсвует ключевое слово begin";
+                            ErroreCode = @"E002 - Отсутсвует ключевое слово begin/Некорретный дескриптор";
                             Message(ErroreCode);
                             return false;
                         }
@@ -192,7 +192,6 @@ namespace TYP_2lab
         /// <summary> Desc - check? </summary>
         public static bool Desc()
         {
-            Desc:
             if (SIden())
             {
                 if (Compare(_il.NumTable, ":"))
@@ -203,7 +202,8 @@ namespace TYP_2lab
                         if (IsLineEnd())
                         {
                             RTheElementTransition();
-                            goto Desc;
+                            if (!Desc())
+                                return false;
                         }
                         else
                         {
@@ -231,11 +231,8 @@ namespace TYP_2lab
                 Message(ErroreCode);
                 return false;
             }
-            else
-            {
-                return true;
-            }
 
+            return true;
         }
         /// <summary> SOper - check? </summary>
         public static bool SOper()
@@ -259,6 +256,7 @@ namespace TYP_2lab
                 }
                 else if (!IsLineEnd())
                 {
+                    RTheElementTransition();
                     if (SOper())
                     {
                         ErroreCode = @"Перед оператором отсутствует ;";
@@ -516,6 +514,10 @@ namespace TYP_2lab
             ReadNextElement();
             if (Exp())
             {
+                if (Compare(_il.NumTable, "\n"))
+                {
+                    RTheElementTransition();
+                }
                 if (Compare(_il.NumTable, "then"))
                 {
                     RTheElementTransition();
@@ -523,7 +525,11 @@ namespace TYP_2lab
                     {
                         if(Compare(_il.NumTable, ";"))
                         { }
-                        else if (Compare(_il.NumTable, "else"))
+                        if (Compare(_il.NumTable, "\n"))
+                        {
+                            RTheElementTransition();
+                        }
+                        if (Compare(_il.NumTable, "else"))
                         {
                             RTheElementTransition();
                             if (!Oper())
@@ -769,15 +775,15 @@ namespace TYP_2lab
         public static bool SIden()
         {
             // Iden | SIden , Iden
-            SIden:
             if (Iden())
             {
                 RTheElementTransition();
 
                 if (Compare(_il.NumTable, ","))
                 {
-                    RTheElementTransition();
-                    goto SIden;
+                    ReadNextElement();
+                    if (!SIden())
+                        return false;
                 }
                 else
                 {
@@ -791,6 +797,7 @@ namespace TYP_2lab
                 return false;
             }
 
+            return true;
         }
 
         /// <summary> Iden - check </summary>
