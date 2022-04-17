@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TYP_2lab
 {
@@ -119,11 +119,6 @@ namespace TYP_2lab
                                 if (!ProgEnd())
                                     return false;
                             }
-                            //else
-                            //{
-                            //    if (!ProgEnd())
-                            //        return false;
-                            //}
                         }
                         else
                         {
@@ -256,7 +251,8 @@ namespace TYP_2lab
                 }
                 else if (!IsLineEnd())
                 {
-                    RTheElementTransition();
+                    if(Compare(_il.NumTable, "\n"))
+                        RTheElementTransition();
                     if (SOper())
                     {
                         ErroreCode = @"Перед оператором отсутствует ;";
@@ -354,8 +350,14 @@ namespace TYP_2lab
             else  if (Compare(_il.NumTable, "("))
             {
                 ReadNextElement();
-                if (!Compare(_il.NumTable, "(") && Exp())
+                if (!Compare(_il.NumTable, "(") )//&& Exp())
                 {
+                    if (!Exp())
+                    {
+                        ErroreCode = @"После ( ожидается выражение";
+                        Message(ErroreCode);
+                        return false;
+                    }
                     if (Compare(_il.NumTable, ")"))
                     {
                         ReadNextElement();
@@ -391,11 +393,12 @@ namespace TYP_2lab
                 else if (Compare(_il.NumTable, "]"))
                 {
                     RTheElementTransition();
+
                     return true;
                 }
                 else
                 {
-                    ErroreCode = @"Ошибка ошибка составного оператора";
+                    ErroreCode = @"Ошибка ошибка составного оператора отсутствует ]";
                     Message(ErroreCode);
                     return false;
                 }
@@ -456,16 +459,11 @@ namespace TYP_2lab
                     {
                         ReadNextElement();
                         if (!Compound())
+                        {
+                            ErroreCode = @"Ожидается что после перевода строки будет оператор";
+                            Message(ErroreCode);
                             return false;
-                        //if (Compare(_il.NumTable, "\n"))
-                        //{
-                        //   ReadNextElement();
-                        //}
-                        //else
-                        //{
-                        //    if (!Compound())
-                        //        return false;
-                        //}
+                        }
                     }
                     else if (!Symbol() && !Compound() && !Compare(_il.NumTable, "]"))
                         return false;
@@ -763,8 +761,6 @@ namespace TYP_2lab
             }
             else
             {
-                ErroreCode = @"E956 - Ошибка Выражения";
-                Message(ErroreCode);
                 return false;
             }
 

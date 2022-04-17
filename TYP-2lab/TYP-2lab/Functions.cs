@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TYP_2lab
@@ -259,6 +260,71 @@ namespace TYP_2lab
             return ((current != '\0' && find() != -1) || current == ' ');
         }
 
+        public static void Translate(int @base)
+        {
+            var word = BufferLexem.Aggregate("", (current1, item) => current1 + item);
+            switch (@base)
+            {
+                case 2:
+                {
+                    if (word.Contains("b"))
+                        word = word.Replace("b", "");
+                    else if (word.Contains("B"))
+                        word = word.Replace("B", "");
+                    var int_ = Convert.ToInt32(word, 2);
+                    nill();
+                    foreach (var item in int_.ToString())
+                    {
+                        BufferLexem += item;
+                    }
+
+                    break;
+                }
+                case 8:
+                {
+                    if (word.Contains("o"))
+                        word = word.Replace("o", "");
+                    else if (word.Contains("O"))
+                        word = word.Replace("o", "");
+                    var int_ = Convert.ToInt32(word, 8);
+                    nill();
+                    foreach (var item in int_.ToString())
+                    {
+                        BufferLexem += item;
+                    }
+                    break;
+                }
+                case 16:
+                {
+                    if (word.Contains("h"))
+                        word = word.Replace("h" ,"");
+                    else if (word.Contains("H"))
+                        word = word.Replace("h", "");
+                    var int_ = Convert.ToInt32(word, 16);
+                    nill();
+                    foreach (var item in int_.ToString())
+                    {
+                        BufferLexem += item;
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+
+        public static void Converter()
+        {
+            var word = BufferLexem.Aggregate("", (current1, item) => current1 + item);
+            word = word.Replace(".", ",");
+            double.TryParse(word, out var otv);
+            nill();
+            foreach (var item in otv.ToString())
+            {
+                BufferLexem += item;
+            }
+        }
+
         /// <summary>
         /// Scan lexem function
         /// </summary>
@@ -436,6 +502,8 @@ namespace TYP_2lab
                             State = States.E;
                         else if (IsHexadecimalLetter())
                             State = States.N16;
+                        else if (IsHexadecimal())
+                            State = States.HX;
                         else if (current == '.')
                             State = States.P;
                         else if (isEnd())
@@ -461,6 +529,7 @@ namespace TYP_2lab
 
                             if (Index == -1)
                             {
+                                Translate(2);
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
@@ -491,6 +560,8 @@ namespace TYP_2lab
                             State = States.D;
                         else if (IsHexadecimalLetter())
                             State = States.N16;
+                        else if (IsHexadecimal())
+                            State = States.HX;
                         else if (IsExponent())
                             State = States.E;
                         else if (current == '.')
@@ -517,6 +588,7 @@ namespace TYP_2lab
 
                             if (Index == -1)
                             {
+                                Translate(8);
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
@@ -545,6 +617,8 @@ namespace TYP_2lab
                             State = States.D;
                         else if (IsHexadecimalLetter())
                             State = States.N16;
+                        else if (IsHexadecimal())
+                            State = States.HX;
                         else if (IsExponent())
                             State = States.E;
                         else if (current == '.')
@@ -630,10 +704,10 @@ namespace TYP_2lab
                             Index = look(Tables.TableDigit);
                             if (Index == -1)
                             {
+                                Translate(16);
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
-
                             Out(3);
                             State = States.H;
                         }
@@ -696,26 +770,16 @@ namespace TYP_2lab
 
                     case States.ZN:
 
-                        add();
-                        GC();
-
-                        if (IsHexadecimal())
+                        if (!IsDigit() && find() == -1)
                         {
-                            State = States.HX;
-                            break;
-                        }
-
-                        else if (IsHexadecimalFigure())
-                        {
-                            State = States.N16;
-                            break;
-                        }
-
-                        else if (!IsDigit() && find() == -1)
-                        {
-                            ErroreCode = @"E0X11 - Ошибка знака порядка.";
-                            State = States.ER;
-                            break;
+                            add();
+                            GC();
+                            if (!IsDigit())
+                            {
+                                ErroreCode = @"E0X11 - Ошибка знака порядка.";
+                                State = States.ER;
+                                break;
+                            }
                         }
 
                         while (IsDigit())
@@ -730,6 +794,7 @@ namespace TYP_2lab
 
                             if (Index == -1)
                             {
+                                Converter();
                                 Tables.TableDigit.Add(BufferLexem);
                                 Index = look(Tables.TableDigit);
                             }
