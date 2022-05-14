@@ -7,7 +7,7 @@ namespace TYP_2lab
     [SuppressMessage("ReSharper", "CoVariantArrayConversion")]
     public partial class Form1 : Form
     {
-        public static Table Tables = new Table();
+        public static Table Tables = new();
         public Form1()
         {
             InitializeComponent();
@@ -32,24 +32,7 @@ namespace TYP_2lab
         /// <param name="e"></param>
         private void PerformAnAnalysisToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clear();
-
-            var action = new Actions();
-            var table = new Lexema(Tables);
-            var parser = new Parser(Tables);
-
-            action.Execute(textBoxCode.Text);
-
-            textBoxReusltMessage.Text = action.Message() + " " + "\n";
-            textBoxCodeResult.Text = @"";
-
-            foreach (var x in Tables.Lexemes.ToArray())
-            {
-                textBoxCodeResult.Text += "(" + x.NumTable + "," + x.NumSymbol + ")";
-            }
-
-            listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
-            listBoxDigit.Items.AddRange(Tables.ItemTableDigit());
+            Analyzer();
         }
 
         /// <summary>
@@ -97,13 +80,29 @@ namespace TYP_2lab
                 Tables.TableInfdificate.Remove(x);
             }
 
+            foreach (var x in Tables.InfdificateType.ToArray())
+            {
+                Tables.InfdificateType.Remove(x);
+            }
+
+            foreach (var x in Tables.DigitTypes.ToArray())
+            {
+                Tables.DigitTypes.Remove(x);
+            }
+
             listBoxDigit.Items.Clear();
             listBoxIndificate.Items.Clear();
             textBoxCodeResult.Clear();
             textBoxReusltMessage.Clear();
+            textBoxPolis.Clear();
         }
 
         private void textBoxCode_TextChanged(object sender, EventArgs e)
+        {
+            Analyzer();
+        }
+
+        public void Analyzer()
         {
             Clear();
 
@@ -121,15 +120,28 @@ namespace TYP_2lab
                 textBoxCodeResult.Text += @"(" + x.NumTable + @"," + x.NumSymbol + @")";
             }
 
+            foreach (var x in Tables.InfdificateType.ToArray())
+            {
+                textBoxPolis.Text += x.Item + @"-" + x.Type + Environment.NewLine;
+                foreach (var d in Tables.DigitTypes.ToArray())
+                {
+                    textBoxPolis.Text += d.Item + @"-" + d.Type + Environment.NewLine;
+                }
+            }
+
             listBoxIndificate.Items.AddRange(Tables.ItemTableIndificate());
             listBoxDigit.Items.AddRange(Tables.ItemTableDigit());
-
         }
 
         private void GoToToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var action = new Actions();
             action.FollowThisLink();
+        }
+
+        private void listBoxForServerWord_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

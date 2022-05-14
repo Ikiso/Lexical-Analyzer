@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TYP_2lab
 {
-    // структура, описывающая лексему
-
     public class Table
     {
-
         public struct Token
         {
             public Token(int numTable, int numSymbol)
@@ -18,6 +16,18 @@ namespace TYP_2lab
             public int NumTable;
             public int NumSymbol;
         };
+
+        public struct TokenType
+        {
+            public TokenType(object item, object type)
+            {
+                this.Item = item;
+                this.Type = type;
+            }
+
+            public object Item;
+            public object Type;
+        }
 
         private readonly List<string> _tableSeveredWord = new()
         {
@@ -66,12 +76,20 @@ namespace TYP_2lab
             {","},
             {"."},
             {"\r"},
-            {"\n"}
+            {"\n"},
+            {"!"},
+            {"!F"},
+            {"W"},
+            {"R"}
         };
 
         public List<string> TableDigit = new();
         public List<string> TableInfdificate = new();
+
         public List<Token> Lexemes = new();
+
+        public List<TokenType> DigitTypes = new();
+        public List<TokenType> InfdificateType = new();
 
         public List<string> ItemValuesTableSeveredWord()
         {
@@ -80,6 +98,11 @@ namespace TYP_2lab
         public List<string> ItemTableRazdeliteli()
         {
             return _tableRazdeliteli;
+        }
+
+        public List<string> ItemTableIdenType()
+        {
+            return InfdificateType.ToArray().Select(x => x.Item.ToString()).ToList();
         }
         public string[] ItemTableDigit()
         {

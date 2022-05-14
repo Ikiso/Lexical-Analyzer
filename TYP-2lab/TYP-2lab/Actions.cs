@@ -8,7 +8,7 @@ namespace TYP_2lab
 {
     public class Actions : IActions
     {
-        private readonly Form1 _form1 = new Form1();
+        private readonly Form1 _form1 = new();
         public string FileOpen(object sender, EventArgs e)
         {
             if (_form1.openFileDialog1.ShowDialog() == DialogResult.Cancel)
@@ -73,7 +73,8 @@ namespace TYP_2lab
         }
         public string Message()
         {
-            return Lexema.Message(Lexema.State, Lexema.ErroreCode) + Environment.NewLine + Parser.Message(Parser.ErroreCode);
+            return Lexema.Message(Lexema.State, Lexema.ErroreCode) + Environment.NewLine + Parser.Message(Parser.ErroreCode)
+                   + Environment.NewLine + Parser.ErrorSemanticMessage(Parser.ErroreSemanticCode);
         }
     }
 }

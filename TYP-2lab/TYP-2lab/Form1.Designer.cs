@@ -55,6 +55,8 @@ namespace TYP_2lab
             this.textBoxReusltMessage = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.textBoxPolis = new System.Windows.Forms.TextBox();
+            this.labelPolis = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,8 +79,9 @@ namespace TYP_2lab
             this.listBoxForServerWord.Location = new System.Drawing.Point(12, 46);
             this.listBoxForServerWord.Name = "listBoxForServerWord";
             this.listBoxForServerWord.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.listBoxForServerWord.Size = new System.Drawing.Size(216, 135);
+            this.listBoxForServerWord.Size = new System.Drawing.Size(216, 150);
             this.listBoxForServerWord.TabIndex = 1;
+            this.listBoxForServerWord.SelectedIndexChanged += new System.EventHandler(this.listBoxForServerWord_SelectedIndexChanged);
             // 
             // listBoxRazdelitelei
             // 
@@ -89,7 +92,7 @@ namespace TYP_2lab
             this.listBoxRazdelitelei.Location = new System.Drawing.Point(234, 46);
             this.listBoxRazdelitelei.Name = "listBoxRazdelitelei";
             this.listBoxRazdelitelei.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.listBoxRazdelitelei.Size = new System.Drawing.Size(216, 135);
+            this.listBoxRazdelitelei.Size = new System.Drawing.Size(216, 150);
             this.listBoxRazdelitelei.TabIndex = 2;
             // 
             // label1
@@ -146,7 +149,7 @@ namespace TYP_2lab
             // labelTextResult
             // 
             this.labelTextResult.AutoSize = true;
-            this.labelTextResult.Location = new System.Drawing.Point(12, 408);
+            this.labelTextResult.Location = new System.Drawing.Point(13, 384);
             this.labelTextResult.Name = "labelTextResult";
             this.labelTextResult.Size = new System.Drawing.Size(107, 15);
             this.labelTextResult.TabIndex = 11;
@@ -176,7 +179,7 @@ namespace TYP_2lab
             this.toolStripMenuItemVibor});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(897, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1018, 24);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -197,7 +200,7 @@ namespace TYP_2lab
             this.OpenToolStripMenuItem,
             this.SaveToolStripMenuItem});
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
-            this.FileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.FileToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.FileToolStripMenuItem.Text = "Файл";
             // 
             // OpenToolStripMenuItem
@@ -217,21 +220,21 @@ namespace TYP_2lab
             // PerformAnAnalysisToolStripMenuItem
             // 
             this.PerformAnAnalysisToolStripMenuItem.Name = "PerformAnAnalysisToolStripMenuItem";
-            this.PerformAnAnalysisToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.PerformAnAnalysisToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.PerformAnAnalysisToolStripMenuItem.Text = "Выполнить анализ";
             this.PerformAnAnalysisToolStripMenuItem.Click += new System.EventHandler(this.PerformAnAnalysisToolStripMenuItem_Click);
             // 
             // CleareToolStripMenuItem
             // 
             this.CleareToolStripMenuItem.Name = "CleareToolStripMenuItem";
-            this.CleareToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.CleareToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.CleareToolStripMenuItem.Text = "Очистить";
             this.CleareToolStripMenuItem.Click += new System.EventHandler(this.CleareToolStripMenuItem_Click);
             // 
             // GoToToolStripMenuItem
             // 
             this.GoToToolStripMenuItem.Name = "GoToToolStripMenuItem";
-            this.GoToToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.GoToToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.GoToToolStripMenuItem.Text = "Перейти";
             this.GoToToolStripMenuItem.Click += new System.EventHandler(this.GoToToolStripMenuItem_Click);
             // 
@@ -243,7 +246,7 @@ namespace TYP_2lab
             this.textBoxCode.Multiline = true;
             this.textBoxCode.Name = "textBoxCode";
             this.textBoxCode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.textBoxCode.Size = new System.Drawing.Size(216, 354);
+            this.textBoxCode.Size = new System.Drawing.Size(216, 335);
             this.textBoxCode.TabIndex = 15;
             this.textBoxCode.TextChanged += new System.EventHandler(this.textBoxCode_TextChanged);
             // 
@@ -255,30 +258,52 @@ namespace TYP_2lab
             this.textBoxCodeResult.Multiline = true;
             this.textBoxCodeResult.Name = "textBoxCodeResult";
             this.textBoxCodeResult.ReadOnly = true;
-            this.textBoxCodeResult.Size = new System.Drawing.Size(216, 354);
+            this.textBoxCodeResult.Size = new System.Drawing.Size(159, 335);
             this.textBoxCodeResult.TabIndex = 16;
             // 
             // textBoxReusltMessage
             // 
             this.textBoxReusltMessage.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.textBoxReusltMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxReusltMessage.Location = new System.Drawing.Point(13, 427);
+            this.textBoxReusltMessage.Location = new System.Drawing.Point(13, 402);
             this.textBoxReusltMessage.Multiline = true;
             this.textBoxReusltMessage.Name = "textBoxReusltMessage";
             this.textBoxReusltMessage.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.textBoxReusltMessage.Size = new System.Drawing.Size(881, 52);
+            this.textBoxReusltMessage.Size = new System.Drawing.Size(999, 52);
             this.textBoxReusltMessage.TabIndex = 17;
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // textBoxPolis
+            // 
+            this.textBoxPolis.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.textBoxPolis.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxPolis.Location = new System.Drawing.Point(843, 46);
+            this.textBoxPolis.Multiline = true;
+            this.textBoxPolis.Name = "textBoxPolis";
+            this.textBoxPolis.ReadOnly = true;
+            this.textBoxPolis.Size = new System.Drawing.Size(169, 335);
+            this.textBoxPolis.TabIndex = 18;
+            // 
+            // labelPolis
+            // 
+            this.labelPolis.AutoSize = true;
+            this.labelPolis.Location = new System.Drawing.Point(843, 28);
+            this.labelPolis.Name = "labelPolis";
+            this.labelPolis.Size = new System.Drawing.Size(42, 15);
+            this.labelPolis.TabIndex = 21;
+            this.labelPolis.Text = "Полиз";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.PowderBlue;
-            this.ClientSize = new System.Drawing.Size(897, 484);
+            this.ClientSize = new System.Drawing.Size(1018, 463);
+            this.Controls.Add(this.labelPolis);
+            this.Controls.Add(this.textBoxPolis);
             this.Controls.Add(this.textBoxReusltMessage);
             this.Controls.Add(this.textBoxCodeResult);
             this.Controls.Add(this.textBoxCode);
@@ -333,6 +358,8 @@ namespace TYP_2lab
         internal SaveFileDialog saveFileDialog1;
         private ToolStripMenuItem CleareToolStripMenuItem;
         private ToolStripMenuItem GoToToolStripMenuItem;
+        private TextBox textBoxPolis;
+        private Label labelPolis;
     }
 }
 
