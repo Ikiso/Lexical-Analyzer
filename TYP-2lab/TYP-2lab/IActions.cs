@@ -2,7 +2,7 @@
 
 namespace TYP_2lab
 {
-    interface IActions
+    internal interface IActions
     {
         public string FileOpen(object sender, EventArgs e);
         public void FileSave(string str);

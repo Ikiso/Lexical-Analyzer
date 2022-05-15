@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TYP_2lab
@@ -20,11 +21,13 @@ namespace TYP_2lab
         {
             Descritpor,
             NoDescriptor,
-            Operator
+            Operator,
+            Assign,
+            While,
+            If
         }
 
         private static States _state = States.Descritpor;
-
 
         public Parser(Table tables)
         {
@@ -40,11 +43,58 @@ namespace TYP_2lab
                 TypeDigit(ref Tables.DigitTypes, x, x.Contains(".") ? "float" : "int");
             }
         }
-
+        //TODO: проверить работоспособность
+        /// <summary> Функция выполняющая код в зависимости от состояния </summary>
+        public static void Switcher()
+        {
+            switch (_state)
+            {
+                case States.Assign:
+                {
+                    InsertBufferType();
+                    if(_bufferListType.Count > 1)
+                        CompareType();
+                    break;
+                }
+                case States.While:
+                { 
+                    BoolExpression();
+                    break;
+                }
+                case States.If:
+                {
+                    BoolExpression();
+                    break;
+                }
+                default:
+                {
+                    ErroreSemanticCode = @"Не удалось выполнить не один из блоков функции Switcher";
+                    ErrorSemanticMessage(ErroreSemanticCode);
+                    break;
+                }
+            }
+        }
+        
         /// <summary> Сравнивание типов объектов </summary>
         public static bool CompareType()
         {
-            return _bufferListType[0] == _bufferListType[1];
+            for (var i = 1; i < _bufferListType.Count; i++)
+            {
+                if (_bufferListType[0] == _bufferListType[i] && ErroreSemanticCode == "")
+                {
+                    ErroreSemanticCode = "";
+                }
+                else
+                {
+                    if (ErroreSemanticCode.Contains("Ошибка типы не равны друг другу, тип должен быть"))
+                        return false;
+                    ErroreSemanticCode += $"Ошибка типы не равны друг другу, тип должен быть {_bufferListType[0]}"
+                                        + Environment.NewLine;
+                    ErrorSemanticMessage(ErroreSemanticCode);
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary> Вывод ошибки семантического анализатора </summary>
@@ -54,26 +104,110 @@ namespace TYP_2lab
 
             return erroreCode == "" ? message : erroreCode;
         }
-
+        //TODO: проверить работоспособность
         ///<summary> Проверка является ли это bool - типом </summary>>
         public static bool IsBool()
         {
             return _bufferListType.Count == 1 && _bufferListType[0] == "bool";
         }
 
-        ///<summary> Присваивание типа bool в выражениях - check ? </summary>
-        public static void AddBoolBuffer(string element)
+        ///<summary> Проверка являеться ли выражение if или while типа bool </summary>
+        public static void BoolExpression()
         {
-            _boolBuffer += element;
+            AddBoolBuffer();
+            if (IsBool() && !ErroreSemanticCode.Contains("не был объявлен"))
+            {
+                ErroreSemanticCode = @"";
+                _boolBuffer = "";
+                ClearBufferType();
+            }
+            else
+            {
+                if(ErroreSemanticCode.Contains("Выражение не являеться bool типа")) return;
+                ErroreSemanticCode += @"Выражение не являеться bool типа";
+                ErrorSemanticMessage(ErroreSemanticCode);
+            }
+
+        }
+
+        //TODO: посмотреть как эта функция будет отрабатывать
+        ///<summary> Присваивание типа bool в выражениях </summary>
+        public static void AddBoolBuffer()
+        {
+            switch (_il.NumTable)
+            {
+                case 1:
+                {
+                    if (OperaGrRelat() || LogCon())
+                    {
+                        _boolBuffer += Tables.ItemValuesTableSeveredWord().ToArray()[_il.NumSymbol];
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    if (Tables.TableInfdificate.Count != 0)
+                    {
+                        _boolBuffer += Tables.TableInfdificate.ToArray()[_il.NumSymbol];
+                    }
+                    else
+                    {
+                        ErroreSemanticCode = @"Не удалось записать в boolBuffer индификатор";
+                        ErrorSemanticMessage(ErroreSemanticCode);
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    if (Tables.TableDigit.Count != 0)
+                    {
+                        _boolBuffer += Tables.TableDigit.ToArray()[_il.NumSymbol];
+                    }
+                    else
+                    {
+                        ErroreSemanticCode = @"Не удалось записать в boolBuffer число";
+                        ErrorSemanticMessage(ErroreSemanticCode);
+                    }
+                    break;
+                }
+
+            }
+
             if (_boolBuffer.Contains("NE") || _boolBuffer.Contains("EQ") || _boolBuffer.Contains("LT")
                 || _boolBuffer.Contains("LE") || _boolBuffer.Contains("GT") || _boolBuffer.Contains("GE")
-                || _boolBuffer is "true" or "false")
+                || _boolBuffer is "true" or "false" or "1" or "0")
             {
+                if (_boolBuffer.Last() == 'E'|| _boolBuffer.Last() == 'Q' || _boolBuffer.Last() == 'T')
+                { return; }
                 _bufferListType.Add("bool");
+            }
+            else if (Tables.InfdificateType.Count != 0)
+            {
+                foreach (var x in Tables.InfdificateType.ToArray())
+                {
+                    if (!ReferenceEquals(x.Item, _boolBuffer)) continue;
+                    if (ReferenceEquals(x.Type, "bool"))
+                    {
+                        _bufferListType.Add("bool");
+                        ErroreSemanticCode = "";
+                    }
+                    else
+                    {
+                        if(ErroreSemanticCode.Contains($"Ошибка тип индификатора: {_boolBuffer}, не являеться bool;"))
+                            return;
+                        ErroreSemanticCode += $"Ошибка тип индификатора: {_boolBuffer}, не являеться bool;" + Environment.NewLine;
+                        ErrorSemanticMessage(ErroreSemanticCode);
+                    }
+                }
+            }
+            else
+            {
+                ErroreSemanticCode = @"Ошибка _boolBuffer, не содержит ничего из перечисленного";
+                ErrorSemanticMessage(ErroreSemanticCode);
             }
         }
 
-
+        //TODO: проверить работоспособность
         ///<summary> Очистка буффера типов </summary>
         public static void ClearBufferType()
         {
@@ -83,20 +217,84 @@ namespace TYP_2lab
             }
         }
 
+        //TODO: проверить работоспособность
         ///<summary> Заносим элемент в bufferType </summary>
-        public static void InsertBufferType(string type)
+        public static void InsertBufferType()
         {
-            if (_bufferListType.Count < 3)
+            switch (_il.NumTable)
             {
-                _bufferListType.Add(type);
+                case 4:
+                {
+                    try
+                    {
+                        if (Tables.InfdificateType.Count != 0)
+                        {
+                            var i = Tables.InfdificateType.ToArray()[_il.NumSymbol].Item;
+                            var t = Tables.InfdificateType.ToArray()[_il.NumSymbol].Type;
+                            if (!ReferenceEquals(t, "0"))
+                            {
+                                _bufferListType.Add(t.ToString());
+                            }
+                            else
+                            {
+                                ErroreSemanticCode = $"Ошикба тип {i} индификатора равен: {t}";
+                                ErrorSemanticMessage(ErroreSemanticCode);
+                            }
+                        }
+                        else
+                        {
+                            ErroreSemanticCode = "Ошикба таблица типа индификаторов содержит " +
+                                                 $"{Tables.InfdificateType.Count} элементов";
+                            ErrorSemanticMessage(ErroreSemanticCode);
+                        }
+                    }
+                    catch
+                    {
+                        ErroreSemanticCode += @"Ошибка не удалось записать в буфер тип индификатора" + Environment.NewLine;
+                        ErrorSemanticMessage(ErroreSemanticCode);
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    try
+                    {
+                        if(Tables.DigitTypes.Count != 0)
+                        {
+                            var i = Tables.DigitTypes.ToArray()[_il.NumSymbol].Item;
+                            var t = Tables.DigitTypes.ToArray()[_il.NumSymbol].Type;
+                            if (t.ToString() == "int" || t.ToString() == "float")
+                            {
+                                _bufferListType.Add(t.ToString());
+                            }
+                            else
+                            {
+                                ErroreSemanticCode = $"Ошибка тип числа {i}, не равен известным, {t}";
+                                ErrorSemanticMessage(ErroreSemanticCode);
+                            }
+                        }
+                        else
+                        {
+                            ErroreSemanticCode = $"Ошибка таблица типа чисел содержит " +
+                                                 $"{Tables.DigitTypes.Count} элементов";
+                            ErrorSemanticMessage(ErroreSemanticCode);
+                        }
+                    }
+                    catch
+                    {
+                        ErroreSemanticCode = @"Ошибка не удалось записать в буфер тип числа";
+                        ErrorSemanticMessage(ErroreSemanticCode);
+                        throw;
+                    }
+                    break;
+                }
+                default:
+                {
+                    ErroreSemanticCode = @"Ошибка не удалось записать в буфер что-либо";
+                    ErrorSemanticMessage(ErroreSemanticCode);
+                    break;
+                }
             }
-
-            else
-            {
-                ErroreSemanticCode = @"Ошибка заполнения буффера, в IndificateType - отсутствуют элементы";
-                ErrorSemanticMessage(ErroreSemanticCode);
-            }
-                
         }
 
         /// <summary> Удаление последнего элемента bufferType </summary>
@@ -153,11 +351,12 @@ namespace TYP_2lab
             {
                 if (Tables.ItemTableIdenType().Contains(tokenType.Item))
                 {
-                    ErroreSemanticCode = $"Индификатор {tokenType.Item} уже объявлен";
+                    ErroreSemanticCode += $"Индификатор {tokenType.Item} уже объявлен" + Environment.NewLine;
                     ErrorSemanticMessage(ErroreSemanticCode);
                 }
                 else
                 {
+                    if (ErroreSemanticCode != "") return;
                     tlist.Add(tokenType);
                     ErroreSemanticCode = @"";
                 }
@@ -179,11 +378,12 @@ namespace TYP_2lab
             {
                 if (!ReferenceEquals(x.Item, item))
                 {
-                    ErroreSemanticCode = $"{item}, не был объявлен";
-                    ErrorSemanticMessage(ErroreCode);
+                    ErroreSemanticCode += $"{item}, не был объявлен" + Environment.NewLine;
+                    ErrorSemanticMessage(ErroreSemanticCode);
                 }
                 else
-                {
+                { 
+                    if(ErroreSemanticCode != "") return;
                     ErroreSemanticCode = @"";
                     return;
                 }
@@ -284,6 +484,7 @@ namespace TYP_2lab
             // Prog -> program var Desc begin SOper end.
 
             // Сбрасываем все первоночальные элементы в 0
+            ErroreSemanticCode = "";
             _boolBuffer = "";
             ClearBufferType();
             _i = 0;
@@ -384,7 +585,7 @@ namespace TYP_2lab
             return Compare(_il.NumTable, ";");
         }
 
-        /// <summary> Desc - check? </summary>
+        /// <summary> Desc - check </summary>
         public static bool Desc()
         {
             _state = States.Descritpor;
@@ -489,7 +690,6 @@ namespace TYP_2lab
         // Sum | Operand OperGrAdd Sum
             if (Summation())
             {
-
                 if (OperGrAdd())
                 {
                     RTheElementTransition();
@@ -531,16 +731,19 @@ namespace TYP_2lab
         {
             if (Iden())
             {
+                Switcher();
                 ReadNextElement();
                 return true;
             }
             else if (Num())
             {
+                Switcher();
                 ReadNextElement();
                 return true;
             }
             else if (LogCon())
             {
+                AddBoolBuffer();
                 ReadNextElement();
                 return true;
             }
@@ -609,6 +812,7 @@ namespace TYP_2lab
             }
             else if (Compare(_il.NumTable, "if"))
             {
+                _state = States.If;
                 return Cond();
             }
             else if (Compare(_il.NumTable, "for"))
@@ -617,6 +821,7 @@ namespace TYP_2lab
             }
             else if (Compare(_il.NumTable, "while"))
             {
+                _state = States.While;
                 return CondLoop();
             }
             else if (Compare(_il.NumTable, "read"))
@@ -629,6 +834,8 @@ namespace TYP_2lab
             }
             else if (Iden())
             {
+                _state = States.Assign;
+                Switcher();
                 RTheElementTransition();
                 return Assig();
             }
@@ -774,6 +981,8 @@ namespace TYP_2lab
             ReadNextElement();
             if (Iden())
             {
+                _state = States.Assign;
+                Switcher();
                 ReadNextElement();
                 if (Assig())
                 {
@@ -956,6 +1165,7 @@ namespace TYP_2lab
             {
                 if (OperaGrRelat())
                 {
+                    Switcher();
                     RTheElementTransition();
 
                     if (!Exp())
@@ -1014,7 +1224,7 @@ namespace TYP_2lab
                 {
                     if(_state == States.Descritpor)
                         IdenAddType(ref Tables.InfdificateType,s,"0");
-                    else if (_state == States.Operator)
+                    else if (_state != States.Descritpor)
                         CheckIden(s);
                     return true;
                 }

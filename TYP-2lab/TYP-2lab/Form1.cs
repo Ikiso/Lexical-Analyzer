@@ -18,7 +18,6 @@ namespace TYP_2lab
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             listBoxForServerWord.Items.AddRange(Tables.ItemValuesTableSeveredWord().ToArray());
             listBoxRazdelitelei.Items.AddRange(Tables.ItemTableRazdeliteli().ToArray());
         }
@@ -28,7 +27,7 @@ namespace TYP_2lab
         /// <summary>
         /// Выполнить анализ
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">  </param>
         /// <param name="e"></param>
         private void PerformAnAnalysisToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -112,7 +111,7 @@ namespace TYP_2lab
 
             action.Execute(textBoxCode.Text);
 
-            textBoxReusltMessage.Text = action.Message() + Environment.NewLine;
+            textBoxReusltMessage.Text = action.Message();
             textBoxCodeResult.Text = @"";
 
             foreach (var x in Tables.Lexemes.ToArray())

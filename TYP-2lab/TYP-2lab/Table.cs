@@ -9,8 +9,8 @@ namespace TYP_2lab
         {
             public Token(int numTable, int numSymbol)
             {
-                this.NumTable = numTable;
-                this.NumSymbol = numSymbol;
+                NumTable = numTable;
+                NumSymbol = numSymbol;
             }
 
             public int NumTable;
@@ -21,8 +21,8 @@ namespace TYP_2lab
         {
             public TokenType(object item, object type)
             {
-                this.Item = item;
-                this.Type = type;
+                Item = item;
+                Type = type;
             }
 
             public object Item;
@@ -80,7 +80,8 @@ namespace TYP_2lab
             {"!"},
             {"!F"},
             {"W"},
-            {"R"}
+            {"R"},
+            {"~"}
         };
 
         public List<string> TableDigit = new();
@@ -99,7 +100,6 @@ namespace TYP_2lab
         {
             return _tableRazdeliteli;
         }
-
         public List<string> ItemTableIdenType()
         {
             return InfdificateType.ToArray().Select(x => x.Item.ToString()).ToList();
