@@ -20,7 +20,6 @@ namespace TYP_2lab
         internal enum States
         {
             Descritpor,
-            NoDescriptor,
             Operator,
             Assign,
             While,
@@ -43,10 +42,10 @@ namespace TYP_2lab
                 TypeDigit(ref Tables.DigitTypes, x, x.Contains(".") ? "float" : "int");
             }
         }
-        //TODO: проверить работоспособность
         /// <summary> Функция выполняющая код в зависимости от состояния </summary>
         public static void Switcher()
         {
+
             switch (_state)
             {
                 case States.Assign:
@@ -57,12 +56,14 @@ namespace TYP_2lab
                     break;
                 }
                 case States.While:
-                { 
+                {
+                    ClearBufferType();
                     BoolExpression();
                     break;
                 }
                 case States.If:
                 {
+                    ClearBufferType();
                     BoolExpression();
                     break;
                 }
@@ -80,9 +81,10 @@ namespace TYP_2lab
         {
             for (var i = 1; i < _bufferListType.Count; i++)
             {
-                if (_bufferListType[0] == _bufferListType[i] && ErroreSemanticCode == "")
+                if (_bufferListType[0] == _bufferListType[i])
                 {
-                    ErroreSemanticCode = "";
+                    if(!ErroreSemanticCode.Contains(@"не был объявлен"))
+                        ErroreSemanticCode = "";
                 }
                 else
                 {
@@ -97,6 +99,7 @@ namespace TYP_2lab
             return true;
         }
 
+
         /// <summary> Вывод ошибки семантического анализатора </summary>
         public static string ErrorSemanticMessage(string erroreCode)
         {
@@ -104,7 +107,7 @@ namespace TYP_2lab
 
             return erroreCode == "" ? message : erroreCode;
         }
-        //TODO: проверить работоспособность
+
         ///<summary> Проверка является ли это bool - типом </summary>>
         public static bool IsBool()
         {
@@ -115,22 +118,20 @@ namespace TYP_2lab
         public static void BoolExpression()
         {
             AddBoolBuffer();
-            if (IsBool() && !ErroreSemanticCode.Contains("не был объявлен"))
+            if (IsBool())
             {
-                ErroreSemanticCode = @"";
                 _boolBuffer = "";
                 ClearBufferType();
             }
             else
             {
                 if(ErroreSemanticCode.Contains("Выражение не являеться bool типа")) return;
-                ErroreSemanticCode += @"Выражение не являеться bool типа";
+                ErroreSemanticCode += @"Выражение не являеться bool типа" + Environment.NewLine;
                 ErrorSemanticMessage(ErroreSemanticCode);
             }
 
         }
 
-        //TODO: посмотреть как эта функция будет отрабатывать
         ///<summary> Присваивание типа bool в выражениях </summary>
         public static void AddBoolBuffer()
         {
@@ -179,7 +180,8 @@ namespace TYP_2lab
             {
                 if (_boolBuffer.Last() == 'E'|| _boolBuffer.Last() == 'Q' || _boolBuffer.Last() == 'T')
                 { return; }
-                _bufferListType.Add("bool");
+                if(CheckBoolExpression())
+                    _bufferListType.Add("bool");
             }
             else if (Tables.InfdificateType.Count != 0)
             {
@@ -188,8 +190,22 @@ namespace TYP_2lab
                     if (!ReferenceEquals(x.Item, _boolBuffer)) continue;
                     if (ReferenceEquals(x.Type, "bool"))
                     {
-                        _bufferListType.Add("bool");
-                        ErroreSemanticCode = "";
+                        ReadNextElement();
+                        if (Compare(_il.NumTable, ")"))
+                        {
+                            BackToLastElement();
+                            _bufferListType.Add("bool");
+                        }
+                        else if (_i == Tables.Lexemes.Count)
+                        {
+                            BackToLastElement();
+                            _bufferListType.Add("bool");
+                        }
+                        else
+                        {
+                            BackToLastElement();
+                            break;
+                        }
                     }
                     else
                     {
@@ -207,7 +223,28 @@ namespace TYP_2lab
             }
         }
 
-        //TODO: проверить работоспособность
+        ///<summary> Проверка типов в выражениях if, while </summary>
+        public static bool CheckBoolExpression()
+        {
+            if(Tables.InfdificateType.Count != 0)
+                foreach (var x in Tables.InfdificateType.ToArray())
+                {
+                    if (!_boolBuffer.Contains(x.Item.ToString() ?? string.Empty)) continue;
+                    _bufferListType.Add(x.Type.ToString());
+                }
+            if(Tables.DigitTypes.Count != 0)
+                foreach (var d in Tables.DigitTypes.ToArray())
+                {
+                    if (!_boolBuffer.Contains(d.Item.ToString() ?? string.Empty)) continue;
+                    _bufferListType.Add(d.Type.ToString());
+                    if (!CompareType()) continue;
+                    ClearBufferType();
+                    return true;
+                }
+            ClearBufferType();
+            return false;
+        } 
+
         ///<summary> Очистка буффера типов </summary>
         public static void ClearBufferType()
         {
@@ -217,7 +254,6 @@ namespace TYP_2lab
             }
         }
 
-        //TODO: проверить работоспособность
         ///<summary> Заносим элемент в bufferType </summary>
         public static void InsertBufferType()
         {
@@ -295,13 +331,6 @@ namespace TYP_2lab
                     break;
                 }
             }
-        }
-
-        /// <summary> Удаление последнего элемента bufferType </summary>
-        public static void RemovLastElement()
-        {
-            if(_bufferListType.Count != 0)
-                _bufferListType.Remove(_bufferListType.Last());
         }
 
         /// <summary> Присваивания типа числу </summary> подумать как сделать лучше
@@ -417,6 +446,13 @@ namespace TYP_2lab
                 _il = Tables.Lexemes[_i];
                 _i++;
             }
+        }
+
+        public static void BackToLastElement()
+        {
+            if (Tables.Lexemes.Count == 0) return;
+            _i--;
+            _il = Tables.Lexemes[_i];
         }
 
         public static void RTheElementTransition()
@@ -600,10 +636,8 @@ namespace TYP_2lab
                         {
                             RTheElementTransition();
                             if (!Desc())
-                            {
-                                _state = States.NoDescriptor;
                                 return false;
-                            }
+
                         }
                         else
                         {
@@ -743,7 +777,8 @@ namespace TYP_2lab
             }
             else if (LogCon())
             {
-                AddBoolBuffer();
+                if(_state == States.If || _state== States.While)
+                    AddBoolBuffer();
                 ReadNextElement();
                 return true;
             }
